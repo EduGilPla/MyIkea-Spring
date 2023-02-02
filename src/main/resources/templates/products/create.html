@@ -36,13 +36,14 @@
     </div>
     <div class="form-group">
       <select class="form-select my-2" id="selectProvincia">
+        <option selected value="0">Selecciona una provincia</option>
         <option th:each="province: ${provinceList}"
                 th:value="${province.id_provincia}"
                 th:text="${province.nombre}">
         </option>
       </select>
       <select class="form-select mb-2" id="selectMunicipio" th:field="*{municipio}">
-        <option selected value="0">Selecciona una provincia</option>
+        <option selected value="0">Selecciona un municipio</option>
       </select>
     </div>
     <input type="submit" value="Añadir" class="btn btn-primary">

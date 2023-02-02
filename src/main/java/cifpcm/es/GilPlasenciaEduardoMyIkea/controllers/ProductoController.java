@@ -40,14 +40,15 @@ public class ProductoController {
   }
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   @PostMapping("/products/create")
-  public String Create(@Valid @ModelAttribute("newAnimal") Producto newProduct, BindingResult bindingResult, Model Viewdata){
+  public String Create(@Valid @ModelAttribute("newProduct") Producto newProduct, BindingResult bindingResult, Model ViewData){
     if(bindingResult.hasErrors()){
+      ViewData.addAttribute("provinceList", provinciaService.getProvinciaList());
       return "/products/create";
     }
     if(productoService.addProduct(newProduct)){
       return "redirect:/products";
     }
-    Viewdata.addAttribute("error","No se ha podido crear el animal, fallo de servidor");
+    ViewData.addAttribute("error","No se ha podido crear el animal, fallo de servidor");
     return "/products/list";
   }
 }

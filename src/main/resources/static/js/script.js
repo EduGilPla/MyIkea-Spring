@@ -8,6 +8,7 @@ let Provincias = [];
 (async function (){
   DOM.selectProvincia.addEventListener("change",loadMunicipios);
   Provincias = await fetch("/provincias.json").then(response => response.json());
+  //loadMunicipios();
 })();
 function loadMunicipios(){
   while(DOM.selectMunicipio.firstChild){
