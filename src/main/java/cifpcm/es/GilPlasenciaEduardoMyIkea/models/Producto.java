@@ -20,7 +20,6 @@ public class Producto {
   @NotBlank
   @Size(min = 1, max = 20)
   private String product_name;
-  @NotBlank
   @NotNull
   private int product_price;
   @NotBlank
@@ -30,7 +29,6 @@ public class Producto {
   @ManyToOne
   @JoinColumn(name = "id_municipio")
   private Municipio municipio;
-  @NotBlank
   @NotNull
   private int product_stock;
 }
