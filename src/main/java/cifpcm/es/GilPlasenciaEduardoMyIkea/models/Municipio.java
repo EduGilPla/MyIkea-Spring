@@ -18,6 +18,7 @@ public class Municipio {
   private int id_municipio;
   //Añadir provincia con relación OneToMany
   @ManyToOne
+  @JoinColumn(name = "id_provincia")
   private Provincia provincia;
   @OneToMany(mappedBy = "municipio",
       cascade = CascadeType.MERGE,

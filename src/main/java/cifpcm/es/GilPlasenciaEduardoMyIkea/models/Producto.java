@@ -28,6 +28,7 @@ public class Producto {
   private String product_picture;
   //Hay que añadir la clase municipio aqui relacion OneToMany
   @ManyToOne
+  @JoinColumn(name = "id_municipio")
   private Municipio municipio;
   @NotBlank
   @NotNull
