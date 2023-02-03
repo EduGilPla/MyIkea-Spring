@@ -10,10 +10,12 @@
 <body>
 <nav th:insert="layout/navbar.html"></nav>
 <main class="container mt-4">
+  <h2 class="h2">Añadir producto</h2>
   <form action="#"
         th:action="@{/products/create}"
         th:object="${newProduct}"
-        method="post">
+        method="post"
+        enctype="multipart/form-data">
     <div class="form-group">
       <label for="name">Nombre</label>
       <input type="text" id="name" class="form-control" th:field="*{product_name}" minlength="2" maxlength="20" th:classappend="${#fields.hasErrors('product_name')} ? 'border border-danger' : '' ">
@@ -26,8 +28,9 @@
     </div>
     <div class="form-group">
       <label for="picture">Foto</label>
-      <input type="file" id="picture" class="form-control" th:field="*{product_picture}" min="1" th:classappend="${#fields.hasErrors('product_picture')} ? 'border border-danger' : '' ">
+      <input type="file" id="picture" name="img" class="form-control" accept="image/*" th:classappend="${#fields.hasErrors('product_picture')} ? 'border border-danger' : '' ">
       <span th:if="${#fields.hasErrors('product_picture')}" th:errors="*{product_picture}" class="text-danger"></span>
+      <input type="hidden" th:field="*{product_picture}" id="pictureValue">
     </div>
     <div class="form-group">
       <label for="stock">Stock</label>

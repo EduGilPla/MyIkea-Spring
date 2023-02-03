@@ -12,8 +12,14 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 
 @Controller
 public class ProductoController {
@@ -21,6 +27,7 @@ public class ProductoController {
   ProductoService productoService;
   @Autowired
   ProvinciaService provinciaService;
+  public static String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "/src/main/resources/static/images/";
   @GetMapping("/")
   public String Start(){
     return "/common/welcome";
@@ -40,15 +47,28 @@ public class ProductoController {
   }
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   @PostMapping("/products/create")
-  public String Create(@Valid @ModelAttribute("newProduct") Producto newProduct, BindingResult bindingResult, Model ViewData){
+  public String Create(@Valid @ModelAttribute("newProduct") Producto newProduct, BindingResult bindingResult, Model ViewData, @RequestParam("img")MultipartFile img){
+    StringBuilder fileNames = new StringBuilder();
+    newProduct.setProduct_picture(img.getOriginalFilename());
     if(bindingResult.hasErrors()){
       ViewData.addAttribute("provinceList", provinciaService.getProvinciaList());
       return "/products/create";
     }
+    try {
+      Path fileNameAndPath = Paths.get(UPLOAD_DIRECTORY,img.getOriginalFilename());
+      fileNames.append(img.getOriginalFilename());
+      Files.write(fileNameAndPath,img.getBytes());
+    }
+    catch (IOException exception){
+      ViewData.addAttribute("productList",productoService.getProductList());
+      ViewData.addAttribute("error",exception.getMessage());
+      return "/products/list";
+    }
     if(productoService.addProduct(newProduct)){
       return "redirect:/products";
     }
-    ViewData.addAttribute("error","No se ha podido crear el animal, fallo de servidor");
+    ViewData.addAttribute("productList",productoService.getProductList());
+    ViewData.addAttribute("error","No se ha podido crear el producto, fallo de servidor");
     return "/products/list";
   }
 }
