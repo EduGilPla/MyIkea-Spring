@@ -20,6 +20,9 @@ public class User {
         inverseJoinColumns = { @JoinColumn(name = "role_id")}
     )
     private List<Role> roles;
+    @OneToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "cart_id", referencedColumnName = "id")
+    private Cart cart;
 
     public User(){
      roles = null;
@@ -76,5 +79,13 @@ public class User {
 
     public void setSurname(String surname) {
         this.surname = surname;
+    }
+
+    public Cart getCart() {
+        return cart;
+    }
+
+    public void setCart(Cart cart) {
+        this.cart = cart;
     }
 }
