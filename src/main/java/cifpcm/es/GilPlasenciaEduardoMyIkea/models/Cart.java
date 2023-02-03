@@ -1,9 +1,6 @@
 package cifpcm.es.GilPlasenciaEduardoMyIkea.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,9 +15,17 @@ import java.util.List;
 @AllArgsConstructor
 public class Cart {
   @Id
-  @GeneratedValue
+  @Column(name = "user_id")
   private int id;
-  @OneToOne(mappedBy = "cart")
+  @OneToOne
+  @MapsId
+  @JoinColumn(name = "user_id")
   private User owner;
-  private List<Producto> list;
+  //private List<Producto> list;
+
+  public Cart(User Owner){
+    id = 0;
+    owner = Owner;
+  }
 }
+

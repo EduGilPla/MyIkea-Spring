@@ -20,12 +20,13 @@ public class User {
         inverseJoinColumns = { @JoinColumn(name = "role_id")}
     )
     private List<Role> roles;
-    @OneToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "cart_id", referencedColumnName = "id")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "owner")
+    @PrimaryKeyJoinColumn
     private Cart cart;
 
     public User(){
      roles = null;
+     cart = new Cart();
     }
     public User(String Name, String Surname, String Email, String Password){
         name = Name;

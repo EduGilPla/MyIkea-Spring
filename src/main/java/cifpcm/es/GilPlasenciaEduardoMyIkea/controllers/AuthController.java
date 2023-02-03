@@ -1,6 +1,7 @@
 package cifpcm.es.GilPlasenciaEduardoMyIkea.controllers;
 
 
+import cifpcm.es.GilPlasenciaEduardoMyIkea.models.Cart;
 import cifpcm.es.GilPlasenciaEduardoMyIkea.models.User;
 import cifpcm.es.GilPlasenciaEduardoMyIkea.services.UserServiceDB;
 import jakarta.validation.Valid;
@@ -29,6 +30,7 @@ public class AuthController {
   public String Register(@Valid @ModelAttribute("newUser") User newUser, BindingResult bindingResult, Model ViewData){
     if(bindingResult.hasErrors())
       return "/authentication/register";
+    newUser.setCart(new Cart(newUser));
     if(userService.registerUser(newUser))
       return "redirect:/";
     ViewData.addAttribute("error","Putada");
