@@ -9,16 +9,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 
 @Controller
@@ -70,5 +68,69 @@ public class ProductoController {
     ViewData.addAttribute("productList",productoService.getProductList());
     ViewData.addAttribute("error","No se ha podido crear el producto, fallo de servidor");
     return "/products/list";
+  }
+  @GetMapping("/products/details/{id}")
+  public String Details(@PathVariable String id, Model ViewData){
+
+    Optional<Producto> foundProduct = productoService.findProduct(Integer.parseInt(id));
+
+    if (foundProduct.isEmpty()){
+      ViewData.addAttribute("error","El producto con id " + id + " no existe");
+      ViewData.addAttribute("productList",productoService.getProductList());
+      return "/products/list";
+    }
+    ViewData.addAttribute("product" , foundProduct.get());
+    return "/products/details";
+  }
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @GetMapping("/products/delete/{id}")
+  public String Delete(@PathVariable String id, Model ViewData){
+
+    Optional<Producto> productToDelete = productoService.findProduct(Integer.parseInt(id));
+
+    if (productToDelete.isEmpty()){
+      ViewData.addAttribute("error","El producto con id " + id + " no existe");
+      ViewData.addAttribute("productList",productoService.getProductList());
+      return "/products/list";
+    }
+    ViewData.addAttribute("product",productToDelete.get());
+    return "/products/delete";
+  }
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @PostMapping("/products/delete/{id}")
+  public String DeletePost(@PathVariable String id, Model ViewData){
+    if(!productoService.deleteProduct(Integer.parseInt(id))){
+      ViewData.addAttribute("error","No se ha podido eliminar el animal");
+      ViewData.addAttribute("productList",productoService.getProductList());
+      return "/products/list";
+    }
+    return "redirect:/products";
+  }
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @GetMapping("/products/update/{id}")
+  public String Update(@PathVariable String id, Model ViewData){
+    Optional<Producto> productoToUpdate = productoService.findProduct(Integer.parseInt(id));
+    if (productoToUpdate.isEmpty()){
+      ViewData.addAttribute("error","El producto con id " + id + " no existe");
+      ViewData.addAttribute("productList",productoService.getProductList());
+      return "/products/list";
+    }
+    ViewData.addAttribute("product",productoToUpdate.get());
+    ViewData.addAttribute("provinceList", provinciaService.getProvinciaList());
+    return "/products/update";
+  }
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @PostMapping("/products/update/{id}")
+  public String Update(@Valid @ModelAttribute("product") Producto modifiedProduct, BindingResult bindingResult, Model ViewData){
+    if(bindingResult.hasErrors()){
+      ViewData.addAttribute("product",modifiedProduct);
+      return "/products/update";
+    }
+    if(!productoService.updateProduct(modifiedProduct)){
+      ViewData.addAttribute("productList",productoService.getProductList());
+      ViewData.addAttribute("error","No se ha podido modificar el objeto por un fallo del servidor");
+      return "/products/list";
+    }
+    return "redirect:/products";
   }
 }

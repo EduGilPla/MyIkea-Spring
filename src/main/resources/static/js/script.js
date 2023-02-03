@@ -11,6 +11,8 @@ let Provincias = [];
   DOM.selectProvincia.addEventListener("change",loadMunicipios);
   DOM.inputFile.addEventListener("change",addPictureValue);
   Provincias = await fetch("/data/provincias.json").then(response => response.json());
+  if(DOM.selectProvincia.value != 0)
+    loadMunicipios();
   //loadMunicipios();
 })();
 function loadMunicipios(){
@@ -21,7 +23,7 @@ function loadMunicipios(){
 
   province.municipios.forEach(municipio => {
     let option = document.createElement("option");
-    option.value=municipio.id_municipio;
+    option.value = municipio.id_municipio;
     option.textContent = municipio.nombre;
     DOM.selectMunicipio.insertAdjacentElement("beforeend",option);
   });
