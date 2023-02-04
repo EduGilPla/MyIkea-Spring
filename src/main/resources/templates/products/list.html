@@ -11,6 +11,7 @@
 <nav th:insert="~{layout/navbar.html}"></nav>
 <main class="container mt-4">
   <h2>Productos Ikea</h2>
+  <h5 th:text="${addedProduct}" sec:authorize="hasRole('ROLE_USER')" class="text-success"></h5>
   <a href="/products/create" sec:authorize="hasAnyRole('ROLE_ADMIN','ROLE_MANAGER')">Añadir producto</a>
   <table class="table table-responsive mt-3">
     <thead class="table-dark">

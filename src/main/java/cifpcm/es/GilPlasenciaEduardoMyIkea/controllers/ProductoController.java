@@ -44,7 +44,9 @@ public class ProductoController {
   }
 
   @GetMapping("/products")
-  public String List(Model ViewData) {
+  public String List(Model ViewData,@RequestParam("product") Optional<String> addedProduct) {
+    if(addedProduct.isPresent())
+      ViewData.addAttribute("addedProduct",addedProduct.get());
     ViewData.addAttribute("productList", productoService.getProductList());
     return "/products/list";
   }

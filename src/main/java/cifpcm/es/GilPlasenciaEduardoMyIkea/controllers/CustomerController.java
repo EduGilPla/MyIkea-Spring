@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ public class CustomerController {
   ProductoService productoService;
   @PreAuthorize("hasRole('ROLE_USER')")
   @GetMapping("/addToCart/{id}")
-  public String addToCart(@PathVariable String id, Authentication authentication, Model ViewData){
+  public String addToCart(@PathVariable String id, Authentication authentication, Model ViewData, RedirectAttributes redirectAttributes){
     Optional<User> userQuery = userService.findUserByEmail(authentication.getName());
     if (userQuery.isEmpty()){
       ViewData.addAttribute("error","No se ha podido añadir el objeto al carrito (Usuario no identificado)");
@@ -43,7 +44,9 @@ public class CustomerController {
     Cart userCart = userQuery.get().getCart();
     userCart.addProduct(product);
     userService.saveUserCart(user);
-    return "redirect:/customer/cart";
+
+    redirectAttributes.addAttribute("product",product.getProduct_name() + " añadido al carrito");
+    return "redirect:/products";
   }
   @PreAuthorize("hasRole('ROLE_USER')")
   @GetMapping("/removeFromCart/{id}")
