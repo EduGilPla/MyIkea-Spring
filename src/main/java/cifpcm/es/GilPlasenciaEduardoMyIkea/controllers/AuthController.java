@@ -33,14 +33,16 @@ public class AuthController {
     return "/authentication/register";
   }
   @PostMapping("/register")
-  public String Register(@Valid @ModelAttribute("newUser") User newUser, BindingResult bindingResult, Model ViewData){
+  public String Register(@Valid @ModelAttribute("user") User newUser, BindingResult bindingResult, Model ViewData){
     if(bindingResult.hasErrors())
       return "/authentication/register";
     newUser.setCart(new Cart(newUser));
-    if(userService.registerUser(newUser))
-      return "redirect:/";
-    ViewData.addAttribute("error","Putada");
-    return "/authentication/register";
+    if(userService.registerUser(newUser)){
+      ViewData.addAttribute("registerCorrecto","¡El usuario " + newUser.getEmail() + " se ha registrado correctamente!");
+      return "/common/welcome";
+    }
+    ViewData.addAttribute("error","El usuario " + newUser.getEmail() + " ya existe.");
+    return "/common/welcome";
   }
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   @GetMapping("/users")

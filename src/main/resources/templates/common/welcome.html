@@ -9,8 +9,10 @@
 </head>
 <body>
 <nav th:insert="~{layout/navbar.html}"></nav>
-<main class="d-flex justify-content-center">
+<main class="d-flex flex-column align-items-center">
   <h1 class="m-3">Bienvenido a la página de Ikea de Eduardo</h1>
+  <h5 th:text="${registerCorrecto}" class="text-success"></h5>
+  <h5 th:text="${error}" class="text-danger"></h5>
 </main>
 </body>
 </html>
