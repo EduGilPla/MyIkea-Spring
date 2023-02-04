@@ -6,12 +6,18 @@ import cifpcm.es.GilPlasenciaEduardoMyIkea.models.User;
 import cifpcm.es.GilPlasenciaEduardoMyIkea.services.UserServiceDB;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+
+import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class AuthController {
@@ -35,5 +41,31 @@ public class AuthController {
       return "redirect:/";
     ViewData.addAttribute("error","Putada");
     return "/authentication/register";
+  }
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @GetMapping("/users")
+  public String ListUsers(Model ViewData, Authentication authentication){
+    List<User> userList = userService.getUserList();
+    Optional<User> adminUser = userService.findUserByEmail(authentication.getName());
+    userList.remove(adminUser.get());
+    ViewData.addAttribute("userList",userList);
+    return "/authentication/users";
+  }
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @GetMapping("/users/delete/{id}")
+  public String deleteUser(@PathVariable String id, Authentication authentication, Model ViewData){
+    Optional<User> deleteQuery = userService.findUserById(Integer.parseInt(id));
+    if(deleteQuery.isEmpty()){
+      ViewData.addAttribute("error","El usuario con id " + id + "no existe en la base de datos.");
+      return "/authentication/users";
+    }
+    try {
+      userService.deleteUser(deleteQuery.get());
+      return "redirect:/users";
+    }
+    catch (Exception exception){
+      ViewData.addAttribute("error",exception.getMessage());
+      return "/authentication/users";
+    }
   }
 }

@@ -83,4 +83,15 @@ public class UserServiceDB implements UserDetailsService {
   public Optional<User> findUserByEmail(String email) {
     return userRepository.findByEmail(email);
   }
+  public Optional<User> findUserById(int id){
+    return userRepository.findById(id);
+  }
+  public void deleteUser(User toDelete) throws Exception{
+    try {
+      userRepository.delete(toDelete);
+    }
+    catch (Exception exception){
+      throw exception;
+    }
+  }
 }
