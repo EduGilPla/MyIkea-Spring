@@ -49,7 +49,7 @@ public class ProductoController {
     return "/products/list";
   }
 
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MANAGER')")
   @GetMapping("/products/create")
   public String Create(Model ViewData) {
     Producto newProduct = new Producto();
@@ -58,7 +58,7 @@ public class ProductoController {
     return "/products/create";
   }
 
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MANAGER')")
   @PostMapping("/products/create")
   public String Create(@Valid @ModelAttribute("newProduct") Producto newProduct, BindingResult bindingResult, Model ViewData, @RequestParam("img") MultipartFile img) {
     StringBuilder fileNames = new StringBuilder();
@@ -98,7 +98,7 @@ public class ProductoController {
     return "/products/details";
   }
 
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MANAGER')")
   @GetMapping("/products/delete/{id}")
   public String Delete(@PathVariable String id, Model ViewData) {
 
@@ -113,7 +113,7 @@ public class ProductoController {
     return "/products/delete";
   }
 
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MANAGER')")
   @PostMapping("/products/delete/{id}")
   public String DeletePost(@PathVariable String id, Model ViewData) {
     if (!productoService.deleteProduct(Integer.parseInt(id))) {
@@ -124,7 +124,7 @@ public class ProductoController {
     return "redirect:/products";
   }
 
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MANAGER')")
   @GetMapping("/products/update/{id}")
   public String Update(@PathVariable String id, Model ViewData) {
     Optional<Producto> productoToUpdate = productoService.findProduct(Integer.parseInt(id));
@@ -138,7 +138,7 @@ public class ProductoController {
     return "/products/update";
   }
 
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_MANAGER')")
   @PostMapping("/products/update/{id}")
   public String Update(@Valid @ModelAttribute("product") Producto modifiedProduct, BindingResult bindingResult, Model ViewData) {
     if (bindingResult.hasErrors()) {
