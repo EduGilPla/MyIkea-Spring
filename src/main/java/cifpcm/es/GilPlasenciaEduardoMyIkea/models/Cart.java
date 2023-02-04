@@ -40,5 +40,8 @@ public class Cart {
   public void removeProduct(Producto product){
     productList.remove(product);
   }
+  public void removeAllProducts(){
+    productList = new ArrayList<>();
+  }
 }
 

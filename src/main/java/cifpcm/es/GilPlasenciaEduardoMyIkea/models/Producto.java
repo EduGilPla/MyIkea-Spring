@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.aspectj.weaver.ast.Or;
 
 import java.util.List;
 
@@ -43,6 +44,9 @@ public class Producto {
   @ManyToMany(mappedBy = "productList",
       fetch = FetchType.EAGER)
   private List<Cart> carts;
+  @ManyToMany(mappedBy = "products",
+      fetch = FetchType.EAGER)
+  private List<Order> orders;
   @Transient
   private int quantity = 1;
 

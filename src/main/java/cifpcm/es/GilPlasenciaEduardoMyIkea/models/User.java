@@ -23,6 +23,10 @@ public class User {
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "owner")
     @PrimaryKeyJoinColumn
     private Cart cart;
+    @OneToMany(mappedBy = "buyer",
+        cascade = CascadeType.MERGE,
+        orphanRemoval = true)
+    private List<Order> orders;
 
     public User(){
      roles = null;
@@ -33,6 +37,9 @@ public class User {
         surname = Surname;
         email = Email;
         password = Password;
+    }
+    public void addOrder(Order newOrder){
+        orders.add(newOrder);
     }
     public int getId() {
         return id;
@@ -88,5 +95,13 @@ public class User {
 
     public void setCart(Cart cart) {
         this.cart = cart;
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
     }
 }
