@@ -45,10 +45,7 @@ public class User {
         orphanRemoval = true)
     private List<Order> orders;
 
-    public User(){
-     roles = null;
-     cart = new Cart();
-    }
+    public User(){}
     public User(String Name, String Surname, String Email, String Password){
         name = Name;
         surname = Surname;
