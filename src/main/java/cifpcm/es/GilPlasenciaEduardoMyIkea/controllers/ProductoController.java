@@ -164,6 +164,26 @@ public class ProductoController {
     return "redirect:/products/cart";
   }
   @PreAuthorize("hasRole('ROLE_USER')")
+  @GetMapping("/products/removeFromCart/{id}")
+  public String removeFromCart(@PathVariable String id, Authentication authentication, Model ViewData){
+    Optional<User> userQuery = userService.findUserByEmail(authentication.getName());
+    if (userQuery.isEmpty()){
+      ViewData.addAttribute("error","No se ha podido eliminar el objeto del carrito (Usuario no identificado)");
+      return "/products/list";
+    }
+    User user = userQuery.get();
+    Optional<Producto> productQuery = productoService.findProduct(Integer.parseInt(id));
+    if(productQuery.isEmpty()){
+      ViewData.addAttribute("error","No se ha podido eliminar el objeto del carrito (El producto con id: " + id + " no existe.");
+      return "/products/list";
+    }
+    Producto product = productQuery.get();
+    Cart userCart = userQuery.get().getCart();
+    userCart.removeProduct(product);
+    userService.saveUserCart(user);
+    return "redirect:/products/cart";
+  }
+  @PreAuthorize("hasRole('ROLE_USER')")
   @GetMapping("/products/cart")
   public String showCart(Authentication authentication, Model ViewData){
     Optional<User> userQuery = userService.findUserByEmail(authentication.getName());
