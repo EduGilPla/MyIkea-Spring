@@ -8,4 +8,5 @@ public interface RoleService {
   List<Role> getRoleList();
 
   Optional<Role> findRoleByName(String name);
+  void saveRoleList(List<Role> roles);
 }

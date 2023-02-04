@@ -20,6 +20,9 @@ public class RoleServiceDB implements RoleService {
   public List<Role> getRoleList() {
     return roleRepository.findAll();
   }
+  public void saveRoleList(List<Role> roles){
+    roleRepository.saveAll(roles);
+  }
   @Override
   public Optional<Role> findRoleByName(String name) {
     return roleRepository.findByName(name);

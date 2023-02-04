@@ -47,15 +47,19 @@ public class UserServiceDB implements UserDetailsService {
       return false;
     }
     Optional<Role> roleQuery = roleRepository.findByName("ROLE_USER");
-    Role defaultRole;
-    if(roleQuery.isEmpty())
-      defaultRole = new Role("ROLE_USER");
-    else
-      defaultRole = roleQuery.get();
+    if (roleQuery.isEmpty())
+      return false;
+    Role defaultRole = roleQuery.get();
     userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
     userDto.setRoles(Arrays.asList(defaultRole));
     userRepository.save(userDto);
     return true;
+  }
+  public void saveUserList(List<User> userList){
+    for(User user : userList){
+      user.setPassword(passwordEncoder.encode(user.getPassword()));
+    }
+    userRepository.saveAll(userList);
   }
   public boolean saveUserCart(User user){
     try{

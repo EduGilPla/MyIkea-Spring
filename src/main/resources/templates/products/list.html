@@ -11,7 +11,7 @@
 <nav th:insert="~{layout/navbar.html}"></nav>
 <main class="container mt-4">
   <a href="/products/create" sec:authorize="hasRole('ROLE_ADMIN')">Añadir producto</a>
-  <table class="table mt-3">
+  <table class="table table-responsive mt-3">
     <thead class="table-dark">
       <th>Id</th>
       <th>Nombre</th>
