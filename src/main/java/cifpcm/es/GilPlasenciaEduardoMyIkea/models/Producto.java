@@ -9,6 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -37,4 +40,13 @@ public class Producto {
   @NotNull(message = "El valor de productos no puede ser nulo")
   @Min(value = 1,message = "Debe haber al menos 1 unidad en stock")
   private int product_stock;
+  @ManyToMany(mappedBy = "productList",
+      fetch = FetchType.EAGER)
+  private List<Cart> carts;
+  @Transient
+  private int quantity = 1;
+
+  public void plusOne(){
+    quantity++;
+  }
 }

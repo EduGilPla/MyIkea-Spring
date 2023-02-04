@@ -2,6 +2,7 @@ package cifpcm.es.GilPlasenciaEduardoMyIkea.services;
 
 import cifpcm.es.GilPlasenciaEduardoMyIkea.interfaces.CartService;
 import cifpcm.es.GilPlasenciaEduardoMyIkea.models.Cart;
+import cifpcm.es.GilPlasenciaEduardoMyIkea.models.Producto;
 import cifpcm.es.GilPlasenciaEduardoMyIkea.repositories.CartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

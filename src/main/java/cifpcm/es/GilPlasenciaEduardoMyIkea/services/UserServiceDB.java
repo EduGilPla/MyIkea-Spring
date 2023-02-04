@@ -57,6 +57,15 @@ public class UserServiceDB implements UserDetailsService {
     userRepository.save(userDto);
     return true;
   }
+  public boolean saveUserCart(User user){
+    try{
+      userRepository.save(user);
+      return true;
+    }
+    catch (Exception exception){
+      return false;
+    }
+  }
   public boolean emailExists(String email) {
     return userRepository.findByEmail(email).isPresent();
   }
@@ -66,5 +75,8 @@ public class UserServiceDB implements UserDetailsService {
       grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
     }
     return grantedAuthorities;
+  }
+  public Optional<User> findUserByEmail(String email) {
+    return userRepository.findByEmail(email);
   }
 }

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -21,11 +22,20 @@ public class Cart {
   @MapsId
   @JoinColumn(name = "user_id")
   private User owner;
-  //private List<Producto> list;
-
+  @ManyToMany(cascade = {CascadeType.ALL},fetch = FetchType.EAGER)
+  @JoinTable(
+      name = "CART_PRODUCT",
+      joinColumns = { @JoinColumn(name = "cart_id")},
+      inverseJoinColumns = { @JoinColumn(name = "product_id")}
+  )
+  private List<Producto> productList;
   public Cart(User Owner){
     id = 0;
     owner = Owner;
+    productList = new ArrayList<>();
+  }
+  public void addProduct(Producto product){
+    productList.add(product);
   }
 }
 

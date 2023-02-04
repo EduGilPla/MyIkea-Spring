@@ -2,10 +2,15 @@ package cifpcm.es.GilPlasenciaEduardoMyIkea.controllers;
 
 import cifpcm.es.GilPlasenciaEduardoMyIkea.interfaces.ProductoService;
 import cifpcm.es.GilPlasenciaEduardoMyIkea.interfaces.ProvinciaService;
+import cifpcm.es.GilPlasenciaEduardoMyIkea.models.Cart;
 import cifpcm.es.GilPlasenciaEduardoMyIkea.models.Producto;
+import cifpcm.es.GilPlasenciaEduardoMyIkea.models.User;
+import cifpcm.es.GilPlasenciaEduardoMyIkea.services.UserServiceDB;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,13 +21,18 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 
 @Controller
 public class ProductoController {
   @Autowired
   ProductoService productoService;
+  @Autowired
+  UserServiceDB userService;
   @Autowired
   ProvinciaService provinciaService;
   public static String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "/src/main/resources/static/images/";
@@ -132,5 +142,49 @@ public class ProductoController {
       return "/products/list";
     }
     return "redirect:/products";
+  }
+  @PreAuthorize("hasRole('ROLE_USER')")
+  @GetMapping("/products/addToCart/{id}")
+  public String addToCart(@PathVariable String id, Authentication authentication, Model ViewData){
+    Optional<User> userQuery = userService.findUserByEmail(authentication.getName());
+    if (userQuery.isEmpty()){
+      ViewData.addAttribute("error","No se ha podido añadir el objeto al carrito (Usuario no identificado)");
+      return "/products/list";
+    }
+    User user = userQuery.get();
+    Optional<Producto> productQuery = productoService.findProduct(Integer.parseInt(id));
+    if(productQuery.isEmpty()){
+      ViewData.addAttribute("error","No se ha podido añadir el objeto al carrito (El producto con id: " + id + " no existe.");
+      return "/products/list";
+    }
+    Producto product = productQuery.get();
+    Cart userCart = userQuery.get().getCart();
+    userCart.addProduct(product);
+    userService.saveUserCart(user);
+    return "redirect:/products/cart";
+  }
+  @PreAuthorize("hasRole('ROLE_USER')")
+  @GetMapping("/products/cart")
+  public String showCart(Authentication authentication, Model ViewData){
+    Optional<User> userQuery = userService.findUserByEmail(authentication.getName());
+    if (userQuery.isEmpty()){
+      ViewData.addAttribute("error","(Usuario no identificado)");
+      return "/products/list";
+    }
+    User user = userQuery.get();
+    Cart cart = user.getCart();
+    List<Producto> cartList = cart.getProductList();
+    List<Producto> noRepetitionProductList = new ArrayList<>();
+    int cartTotal = 0;
+    for(Producto product : cartList){
+      if(noRepetitionProductList.contains(product))
+        product.plusOne();
+      else
+        noRepetitionProductList.add(product);
+      cartTotal += product.getProduct_price();
+    }
+    ViewData.addAttribute("totalPrice", cartTotal);
+    ViewData.addAttribute("cart",noRepetitionProductList);
+    return "/products/cart";
   }
 }
