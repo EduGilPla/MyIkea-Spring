@@ -10,7 +10,10 @@
         <a class="nav-link" href="/products">Productos</a>
       </li>
       <li class="nav-item active" sec:authorize="hasRole('ROLE_USER')">
-        <a class="nav-link" href="/products/cart">Carrito</a>
+        <a class="nav-link" href="/customer/cart">Carrito</a>
+      </li>
+      <li class="nav-item active" sec:authorize="hasRole('ROLE_USER')">
+        <a class="nav-link" href="/customer/orders">Pedidos</a>
       </li>
     </ul>
     <div class="navbar-nav align-items-center">
