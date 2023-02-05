@@ -26,18 +26,21 @@ public class CustomerController {
   UserServiceDB userService;
   @Autowired
   ProductoService productoService;
+  private final String ErrorAttributeName = "error";
   @PreAuthorize("hasRole('ROLE_USER')")
   @GetMapping("/addToCart/{id}")
   public String addToCart(@PathVariable String id, Authentication authentication, Model ViewData, RedirectAttributes redirectAttributes){
     Optional<User> userQuery = userService.findUserByEmail(authentication.getName());
     if (userQuery.isEmpty()){
-      ViewData.addAttribute("error","No se ha podido añadir el objeto al carrito (Usuario no identificado)");
+      String USER_NOT_FOUND_ERROR = "No se ha podido añadir el objeto al carrito. (Usuario no identificado)";
+      ViewData.addAttribute(ErrorAttributeName,USER_NOT_FOUND_ERROR);
       return "/products/list";
     }
     User user = userQuery.get();
     Optional<Producto> productQuery = productoService.findProduct(Integer.parseInt(id));
     if(productQuery.isEmpty()){
-      ViewData.addAttribute("error","No se ha podido añadir el objeto al carrito (El producto con id: " + id + " no existe.");
+      String PRODUCT_NOT_FOUND_ERROR = "No se ha podido añadir el objeto al carrito. (El producto con id: " + id + " no existe)";
+      ViewData.addAttribute(ErrorAttributeName,PRODUCT_NOT_FOUND_ERROR);
       return "/products/list";
     }
     Producto product = productQuery.get();
@@ -53,13 +56,15 @@ public class CustomerController {
   public String removeFromCart(@PathVariable String id, Authentication authentication, Model ViewData){
     Optional<User> userQuery = userService.findUserByEmail(authentication.getName());
     if (userQuery.isEmpty()){
-      ViewData.addAttribute("error","No se ha podido eliminar el objeto del carrito (Usuario no identificado)");
+      String USER_NOT_FOUND_ERROR = "No se ha podido eliminar el objeto del carrito. (Usuario no identificado)";
+      ViewData.addAttribute(ErrorAttributeName,USER_NOT_FOUND_ERROR);
       return "/products/list";
     }
     User user = userQuery.get();
     Optional<Producto> productQuery = productoService.findProduct(Integer.parseInt(id));
     if(productQuery.isEmpty()){
-      ViewData.addAttribute("error","No se ha podido eliminar el objeto del carrito (El producto con id: " + id + " no existe.");
+      String PRODUCT_NOT_FOUND_ERROR = "No se ha podido eliminar el objeto del carrito. (El producto con id: " + id + " no existe)";
+      ViewData.addAttribute(ErrorAttributeName,PRODUCT_NOT_FOUND_ERROR);
       return "/products/list";
     }
     Producto product = productQuery.get();
@@ -73,7 +78,8 @@ public class CustomerController {
   public String showCart(Authentication authentication, Model ViewData){
     Optional<User> userQuery = userService.findUserByEmail(authentication.getName());
     if (userQuery.isEmpty()){
-      ViewData.addAttribute("error","(Usuario no identificado)");
+      String USER_NOT_FOUND_ERROR = "No se ha podido mostrar el carrito. (Usuario no identificado)";
+      ViewData.addAttribute(ErrorAttributeName,USER_NOT_FOUND_ERROR);
       return "/products/list";
     }
     User user = userQuery.get();
@@ -97,20 +103,27 @@ public class CustomerController {
   public String placeOrder(Authentication authentication, Model ViewData){
     Optional<User> userQuery = userService.findUserByEmail(authentication.getName());
     if (userQuery.isEmpty()){
-      ViewData.addAttribute("error","(Usuario no identificado)");
+      String USER_NOT_FOUND_ERROR = "No se ha podido llevar a cabo el pedido. (Usuario no identificado)";
+      ViewData.addAttribute(ErrorAttributeName,USER_NOT_FOUND_ERROR);
       return "/products/list";
     }
     User user = userQuery.get();
     Cart cart = user.getCart();
     if(cart.getProductList().isEmpty()){
-      ViewData.addAttribute("error","No puedes hacer un pedido vacío");
+      String EMPTY_CART_ERROR = "No se ha podido llevar a cabo el pedido. (El carro está vacío)";
+      ViewData.addAttribute(ErrorAttributeName,EMPTY_CART_ERROR);
       ViewData.addAttribute("totalPrice",0);
       return "/customer/cart";
     }
     Order newOrder = new Order(cart.getProductList(),user);
     user.addOrder(newOrder);
     cart.removeAllProducts();
-    userService.saveUserCart(user);
+    if(!userService.saveUserCart(user)){
+      String PERSISTENCE_FAILED_ERROR = "El pedido se ha llevado a cabo, pero no se ha guardado en la base de datos. Los cambios se perderán al cerrar sesión. (Error de SQL)";
+      ViewData.addAttribute(ErrorAttributeName,PERSISTENCE_FAILED_ERROR);
+      ViewData.addAttribute("totalPrice",0);
+      return "/customer/cart";
+    }
     return "redirect:/customer/orders";
   }
   @PreAuthorize("hasRole('ROLE_USER')")
@@ -118,7 +131,8 @@ public class CustomerController {
   public String showOrders(Authentication authentication, Model ViewData){
     Optional<User> userQuery = userService.findUserByEmail(authentication.getName());
     if (userQuery.isEmpty()){
-      ViewData.addAttribute("error","(Usuario no identificado)");
+      String USER_NOT_FOUND_ERROR = "No se han podido mostrar los pedidos. (Usuario no identificado)";
+      ViewData.addAttribute(ErrorAttributeName,USER_NOT_FOUND_ERROR);
       return "/products/list";
     }
     User user = userQuery.get();
@@ -130,7 +144,8 @@ public class CustomerController {
   public String orderDetails(@PathVariable String id, Authentication authentication, Model ViewData){
     Optional<User> userQuery = userService.findUserByEmail(authentication.getName());
     if (userQuery.isEmpty()){
-      ViewData.addAttribute("error","(Usuario no identificado)");
+      String USER_NOT_FOUND_ERROR = "No se han podido mostrar los detalles del pedido con id " + id + ". (Usuario no identificado)";
+      ViewData.addAttribute(ErrorAttributeName,USER_NOT_FOUND_ERROR);
       return "/products/list";
     }
     User user = userQuery.get();
@@ -142,8 +157,9 @@ public class CustomerController {
       }
     }
     if(orderToDetail == null){
+      String ORDER_NOT_FOUND_ERROR = "No se han podido mostrar los detalles del pedido con id " + id + ". (Pedido no encontrado)";
       ViewData.addAttribute("orders",user.getOrders());
-      ViewData.addAttribute("error","El pedido con id " + id + " no existe");
+      ViewData.addAttribute(ErrorAttributeName,ORDER_NOT_FOUND_ERROR);
       return "/customer/orders";
     }
     int totalOrderPrice = 0;

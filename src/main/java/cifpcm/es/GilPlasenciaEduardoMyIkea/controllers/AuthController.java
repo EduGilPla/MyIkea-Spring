@@ -23,6 +23,7 @@ import java.util.Optional;
 public class AuthController {
   @Autowired
   UserServiceDB userService;
+  private final String ErrorAttributeName = "error";
   @GetMapping("/login")
   public String Login(){
     return "/authentication/login";
@@ -34,14 +35,16 @@ public class AuthController {
   }
   @PostMapping("/register")
   public String Register(@Valid @ModelAttribute("user") User newUser, BindingResult bindingResult, Model ViewData){
-    if(bindingResult.hasErrors())
+    if(bindingResult.hasErrors()){
       return "/authentication/register";
+    }
     newUser.setCart(new Cart(newUser));
     if(userService.registerUser(newUser)){
-      ViewData.addAttribute("registerCorrecto","¡El usuario " + newUser.getEmail() + " se ha registrado correctamente!");
+      String CORRECT_REGISTER_MESSAGE = "¡El usuario " + newUser.getEmail() + " se ha registrado correctamente!";
+      ViewData.addAttribute("registerCorrecto",CORRECT_REGISTER_MESSAGE);
       return "/common/welcome";
     }
-    ViewData.addAttribute("error","El usuario " + newUser.getEmail() + " ya existe.");
+    ViewData.addAttribute(ErrorAttributeName,"El usuario " + newUser.getEmail() + " ya existe.");
     return "/common/welcome";
   }
   @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -58,7 +61,8 @@ public class AuthController {
   public String deleteUser(@PathVariable String id, Authentication authentication, Model ViewData){
     Optional<User> deleteQuery = userService.findUserById(Integer.parseInt(id));
     if(deleteQuery.isEmpty()){
-      ViewData.addAttribute("error","El usuario con id " + id + "no existe en la base de datos.");
+      String USER_NOT_FOUND_ERROR = "El usuario con id " + id + "no existe en la base de datos.";
+      ViewData.addAttribute(ErrorAttributeName,USER_NOT_FOUND_ERROR);
       return "/authentication/users";
     }
     try {
@@ -66,7 +70,7 @@ public class AuthController {
       return "redirect:/users";
     }
     catch (Exception exception){
-      ViewData.addAttribute("error",exception.getMessage());
+      ViewData.addAttribute(ErrorAttributeName,exception.getMessage());
       return "/authentication/users";
     }
   }

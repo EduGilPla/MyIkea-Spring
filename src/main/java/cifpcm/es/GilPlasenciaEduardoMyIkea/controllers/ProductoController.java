@@ -37,6 +37,7 @@ public class ProductoController {
   @Autowired
   ProvinciaService provinciaService;
   public static String UPLOAD_DIRECTORY = System.getProperty("user.dir") + "/src/main/resources/static/images/";
+  private final String ErrorAttributeName = "error";
 
   @GetMapping("/")
   public String Start() {
@@ -75,14 +76,15 @@ public class ProductoController {
       Files.write(fileNameAndPath, img.getBytes());
     } catch (IOException exception) {
       ViewData.addAttribute("productList", productoService.getProductList());
-      ViewData.addAttribute("error", exception.getMessage());
+      ViewData.addAttribute(ErrorAttributeName, exception.getMessage());
       return "/products/list";
     }
     if (productoService.addProduct(newProduct)) {
       return "redirect:/products";
     }
+    String SERVER_ERROR = "No se ha podido crear el producto, fallo de servidor";
     ViewData.addAttribute("productList", productoService.getProductList());
-    ViewData.addAttribute("error", "No se ha podido crear el producto, fallo de servidor");
+    ViewData.addAttribute(ErrorAttributeName,SERVER_ERROR);
     return "/products/list";
   }
 
@@ -92,7 +94,8 @@ public class ProductoController {
     Optional<Producto> foundProduct = productoService.findProduct(Integer.parseInt(id));
 
     if (foundProduct.isEmpty()) {
-      ViewData.addAttribute("error", "El producto con id " + id + " no existe");
+      String PRODUCT_NOT_FOUND_ERROR = "No se han podido mostrar los detalles del producto. ( El producto con id " + id + " no existe)";
+      ViewData.addAttribute(ErrorAttributeName, PRODUCT_NOT_FOUND_ERROR);
       ViewData.addAttribute("productList", productoService.getProductList());
       return "/products/list";
     }
@@ -107,7 +110,8 @@ public class ProductoController {
     Optional<Producto> productToDelete = productoService.findProduct(Integer.parseInt(id));
 
     if (productToDelete.isEmpty()) {
-      ViewData.addAttribute("error", "El producto con id " + id + " no existe");
+      String PRODUCT_NOT_FOUND_ERROR = "No se ha podido eliminar el producto. ( El producto con id " + id + " no existe)";
+      ViewData.addAttribute(ErrorAttributeName, PRODUCT_NOT_FOUND_ERROR);
       ViewData.addAttribute("productList", productoService.getProductList());
       return "/products/list";
     }
@@ -119,7 +123,8 @@ public class ProductoController {
   @PostMapping("/products/delete/{id}")
   public String DeletePost(@PathVariable String id, Model ViewData) {
     if (!productoService.deleteProduct(Integer.parseInt(id))) {
-      ViewData.addAttribute("error", "No se ha podido eliminar el animal");
+      String DATABASE_ERROR = "No se ha podido eliminar el producto. (Error de SQL)";
+      ViewData.addAttribute(ErrorAttributeName, DATABASE_ERROR);
       ViewData.addAttribute("productList", productoService.getProductList());
       return "/products/list";
     }
@@ -131,7 +136,8 @@ public class ProductoController {
   public String Update(@PathVariable String id, Model ViewData) {
     Optional<Producto> productoToUpdate = productoService.findProduct(Integer.parseInt(id));
     if (productoToUpdate.isEmpty()) {
-      ViewData.addAttribute("error", "El producto con id " + id + " no existe");
+      String PRODUCT_NOT_FOUND_ERROR = "No se ha podido actualizar el producto. ( El producto con id " + id + " no existe)";
+      ViewData.addAttribute(ErrorAttributeName, PRODUCT_NOT_FOUND_ERROR);
       ViewData.addAttribute("productList", productoService.getProductList());
       return "/products/list";
     }
@@ -148,8 +154,9 @@ public class ProductoController {
       return "/products/update";
     }
     if (!productoService.updateProduct(modifiedProduct)) {
+      String DATABASE_ERROR = "No se ha podido modificar el producto. (Error de SQL)";
       ViewData.addAttribute("productList", productoService.getProductList());
-      ViewData.addAttribute("error", "No se ha podido modificar el objeto por un fallo del servidor");
+      ViewData.addAttribute(ErrorAttributeName, DATABASE_ERROR);
       return "/products/list";
     }
     return "redirect:/products";
