@@ -53,6 +53,7 @@ public class User {
         surname = Surname;
         email = Email;
         password = Password;
+        cart = new Cart(this);
     }
     public void addOrder(Order newOrder){
         orders.add(newOrder);

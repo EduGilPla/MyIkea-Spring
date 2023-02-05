@@ -87,19 +87,16 @@ public class SecurityConfig {
     List<User> usersToAdd = new ArrayList<>();
     if(userQuery.isEmpty()){
       User newUser = new User("User","User","user@user.com","1234");
-      newUser.setCart(new Cart(newUser));
       newUser.setRoles(userRoles);
       usersToAdd.add(newUser);
     }
     if(managerQuery.isEmpty()){
       User newManager = new User("Manager","Manager","manager@manager.com","1234");
-      newManager.setCart(new Cart(newManager));
       newManager.setRoles(managerRoles);
       usersToAdd.add(newManager);
     }
     if(adminQuery.isEmpty()){
       User newAdmin = new User("Admin","Admin","admin@admin.com","1234");
-      newAdmin.setCart(new Cart(newAdmin));
       newAdmin.setRoles(adminRoles);
       usersToAdd.add(newAdmin);
     }
