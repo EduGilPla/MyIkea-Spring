@@ -38,13 +38,13 @@ public class AuthController {
     if(bindingResult.hasErrors()){
       return "/authentication/register";
     }
-    newUser.setCart(new Cart(newUser));
-    if(userService.registerUser(newUser)){
-      String CORRECT_REGISTER_MESSAGE = "¡El usuario " + newUser.getEmail() + " se ha registrado correctamente!";
-      ViewData.addAttribute("registerCorrecto",CORRECT_REGISTER_MESSAGE);
+    if(!userService.registerUser(newUser)){
+      String USER_ALREADY_EXISTS_ERROR = "El usuario " + newUser.getEmail() + " ya existe.";
+      ViewData.addAttribute(ErrorAttributeName,USER_ALREADY_EXISTS_ERROR);
       return "/common/welcome";
     }
-    ViewData.addAttribute(ErrorAttributeName,"El usuario " + newUser.getEmail() + " ya existe.");
+    String CORRECT_REGISTER_MESSAGE = "¡El usuario " + newUser.getEmail() + " se ha registrado correctamente!";
+    ViewData.addAttribute("registerCorrecto",CORRECT_REGISTER_MESSAGE);
     return "/common/welcome";
   }
   @PreAuthorize("hasRole('ROLE_ADMIN')")

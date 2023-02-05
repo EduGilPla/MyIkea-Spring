@@ -45,7 +45,9 @@ public class User {
         orphanRemoval = true)
     private List<Order> orders;
 
-    public User(){}
+    public User(){
+        cart = new Cart(this);
+    }
     public User(String Name, String Surname, String Email, String Password){
         name = Name;
         surname = Surname;
