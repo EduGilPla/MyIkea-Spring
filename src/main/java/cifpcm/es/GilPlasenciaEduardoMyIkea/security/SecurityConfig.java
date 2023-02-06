@@ -1,7 +1,6 @@
 package cifpcm.es.GilPlasenciaEduardoMyIkea.security;
 
 import cifpcm.es.GilPlasenciaEduardoMyIkea.interfaces.RoleService;
-import cifpcm.es.GilPlasenciaEduardoMyIkea.models.Cart;
 import cifpcm.es.GilPlasenciaEduardoMyIkea.models.Role;
 import cifpcm.es.GilPlasenciaEduardoMyIkea.models.User;
 import cifpcm.es.GilPlasenciaEduardoMyIkea.services.UserServiceDB;

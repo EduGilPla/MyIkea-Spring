@@ -2,16 +2,11 @@ package cifpcm.es.GilPlasenciaEduardoMyIkea.controllers;
 
 import cifpcm.es.GilPlasenciaEduardoMyIkea.interfaces.ProductoService;
 import cifpcm.es.GilPlasenciaEduardoMyIkea.interfaces.ProvinciaService;
-import cifpcm.es.GilPlasenciaEduardoMyIkea.models.Cart;
-import cifpcm.es.GilPlasenciaEduardoMyIkea.models.Order;
 import cifpcm.es.GilPlasenciaEduardoMyIkea.models.Producto;
-import cifpcm.es.GilPlasenciaEduardoMyIkea.models.User;
 import cifpcm.es.GilPlasenciaEduardoMyIkea.services.UserServiceDB;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,10 +17,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 
 @Controller
