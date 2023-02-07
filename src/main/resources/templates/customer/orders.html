@@ -15,12 +15,14 @@
     <thead class="table-dark">
       <th>Id</th>
       <th>Fecha</th>
+      <th>Precio</th>
       <th>Productos</th>
     </thead>
     <tbody>
       <tr th:each="order : ${orders}">
         <td th:text="${order.id}"></td>
         <td th:text="${order.orderDate}"></td>
+        <td th:text="${order.totalPrice} + '€'"></td>
         <td>
           <a th:href="@{|/customer/orders/details/${order.id}|}" class="btn btn-success">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">

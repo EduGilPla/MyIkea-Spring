@@ -20,6 +20,7 @@
       <th>Precio</th>
       <th>Foto</th>
       <th>Municipio</th>
+      <th>Provincia</th>
       <th>Stock</th>
       <th>Acciones</th>
     </thead>
@@ -30,6 +31,7 @@
       <td th:text="${product.product_price} + '€'"></td>
       <td><img src="" th:src="@{|/images/${product.product_picture}|}" width="100px" height="100px"></td>
       <td th:text="${product.municipio.nombre}"></td>
+      <td th:text="${product.municipio.provincia.nombre}"></td>
       <td th:text="${product.product_stock}"></td>
       <td>
         <a th:href="@{|/products/details/${product.product_id}|}" class="btn btn-success">

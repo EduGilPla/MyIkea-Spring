@@ -108,13 +108,24 @@ public class CustomerController {
     }
     User user = userQuery.get();
     Cart cart = user.getCart();
-    if(cart.getProductList().isEmpty()){
+    List<Producto> productList = cart.getProductList();
+    if(productList.isEmpty()){
       String EMPTY_CART_ERROR = "No se ha podido llevar a cabo el pedido. (El carro está vacío)";
       ViewData.addAttribute(ErrorAttributeName,EMPTY_CART_ERROR);
       ViewData.addAttribute("totalPrice",0);
       return "/customer/cart";
     }
-    Order newOrder = new Order(cart.getProductList(),user);
+    int totalPrice = 0;
+    for(Producto product : productList){
+      totalPrice+= product.getProduct_price();
+    }
+    if(totalPrice == 0){
+      String INVALID_PRICE_ERROR = "No se ha podido llevar a cabo el pedido. (El precio es 0)";
+      ViewData.addAttribute(ErrorAttributeName,INVALID_PRICE_ERROR);
+      ViewData.addAttribute("totalPrice",0);
+      return "/customer/cart";
+    }
+    Order newOrder = new Order(productList,user,totalPrice);
     user.addOrder(newOrder);
     cart.removeAllProducts();
     if(!userService.saveUserCart(user)){
@@ -161,17 +172,14 @@ public class CustomerController {
       ViewData.addAttribute(ErrorAttributeName,ORDER_NOT_FOUND_ERROR);
       return "/customer/orders";
     }
-    int totalOrderPrice = 0;
     List<Producto> orderProducts = new ArrayList<>();
     for(Producto product : orderToDetail.getProducts()){
       if(orderProducts.contains(product))
         product.plusOne();
       else
         orderProducts.add(product);
-      totalOrderPrice += product.getProduct_price();
     }
     ViewData.addAttribute("orderProducts",orderProducts);
-    ViewData.addAttribute("total",totalOrderPrice);
     ViewData.addAttribute("order",orderToDetail);
     return "/customer/orderDetails";
   }

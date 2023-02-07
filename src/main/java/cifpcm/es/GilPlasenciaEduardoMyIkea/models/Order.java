@@ -32,9 +32,12 @@ public class Order {
   private List<Producto> products;
   private Date orderDate;
 
-  public Order(List<Producto> Products, User Buyer){
+  private int totalPrice;
+
+  public Order(List<Producto> Products, User Buyer, int Price){
     buyer = Buyer;
     products = Products;
     orderDate = new Date();
+    totalPrice = Price;
   }
 }
