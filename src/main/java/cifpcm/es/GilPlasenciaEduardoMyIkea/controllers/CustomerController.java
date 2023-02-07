@@ -87,11 +87,11 @@ public class CustomerController {
     List<Producto> noRepetitionProductList = new ArrayList<>();
     int cartTotal = 0;
     for(Producto product : cartList){
+      cartTotal += product.getProduct_price();
       if(noRepetitionProductList.contains(product))
         product.plusOne();
       else
         noRepetitionProductList.add(product);
-      cartTotal += product.getProduct_price();
     }
     ViewData.addAttribute("totalPrice", cartTotal);
     ViewData.addAttribute("cart",noRepetitionProductList);
