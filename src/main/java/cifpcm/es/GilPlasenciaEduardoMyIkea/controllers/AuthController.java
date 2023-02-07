@@ -50,8 +50,8 @@ public class AuthController {
   @GetMapping("/users")
   public String ListUsers(Model ViewData, Authentication authentication){
     List<User> userList = userService.getUserList();
-    Optional<User> adminUser = userService.findUserByEmail(authentication.getName());
-    userList.remove(adminUser.get());
+    Optional<User> currentAdminUser = userService.findUserByEmail(authentication.getName());
+    userList.remove(currentAdminUser.get());
     ViewData.addAttribute("userList",userList);
     return "/authentication/users";
   }
@@ -59,13 +59,25 @@ public class AuthController {
   @GetMapping("/users/delete/{id}")
   public String deleteUser(@PathVariable String id, Authentication authentication, Model ViewData){
     Optional<User> deleteQuery = userService.findUserById(Integer.parseInt(id));
+    User currentAdminUser = userService.findUserByEmail(authentication.getName()).get();
+    List<User> userList = userService.getUserList();
     if(deleteQuery.isEmpty()){
       String USER_NOT_FOUND_ERROR = "El usuario con id " + id + "no existe en la base de datos.";
+      userList.remove(currentAdminUser);
+      ViewData.addAttribute("userList",userList);
       ViewData.addAttribute(ErrorAttributeName,USER_NOT_FOUND_ERROR);
       return "/authentication/users";
     }
+    User userToDelete = deleteQuery.get();
+    if(userToDelete.getEmail() == currentAdminUser.getEmail()){
+      String CANT_DELETE_YOUR_USER_ERROR = "El usuario con id " + id + " es el administrador loggeado actualmente. No se puede eliminar.";
+      userList.remove(currentAdminUser);
+      ViewData.addAttribute("userList",userList);
+      ViewData.addAttribute(ErrorAttributeName,CANT_DELETE_YOUR_USER_ERROR);
+      return "/authentication/users";
+    }
     try {
-      userService.deleteUser(deleteQuery.get());
+      userService.deleteUser(userToDelete);
       return "redirect:/users";
     }
     catch (Exception exception){

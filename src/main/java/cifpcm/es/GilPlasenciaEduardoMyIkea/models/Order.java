@@ -23,7 +23,7 @@ public class Order {
   @JoinColumn(name = "user_id")
   private User buyer;
 
-  @ManyToMany(cascade = {CascadeType.ALL},fetch = FetchType.EAGER)
+  @ManyToMany(cascade = {CascadeType.DETACH},fetch = FetchType.EAGER)
   @JoinTable(
       name = "ORDER_PRODUCT",
       joinColumns = { @JoinColumn(name = "order_id")},
